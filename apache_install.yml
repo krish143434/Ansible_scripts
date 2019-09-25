@@ -1,0 +1,10 @@
+- hosts: all
+  become: true
+  tasks:
+    - name: debugging
+      debug:
+        var=[hostvars]['ansibile_default_ipv4']['address']
+    - name: install apache2
+      apt:
+        - name: installig apache2
+          state: present

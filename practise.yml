@@ -1,0 +1,50 @@
+- hosts: all
+  become: true
+  tasks:
+    - name: Setting the Application github details
+      set_fact:
+        application_repo_url: "https://github.com/vinodhbasavani/Static-Site.git"
+
+    - name: Setting the folder details for application
+      set_fact:
+        folder_for_application: "/data/application1"
+
+    - name: Creating the folder for the application cloning
+      file:
+        path: "{{ folder_for_application }}"
+        state: directory
+        owner: root
+        group: root
+
+    - name: Cloning the Application repo to the folder created above
+      git:
+        repo: "{{ application_repo_url }}"
+        dest: "{{ folder_for_application }}"
+        version: "{{ application_repo_branch }}"
+
+    - name: Running the Shell command
+      shell: ls -al
+      args:
+        chdir: "{{ folder_for_application }}"
+      register: shell_command_output
+
+    - name: Debugging the shell command output
+      debug:
+        var=shell_command_output
+
+    - name: Removing the folder
+      shell: rm -rf
+      args:
+        chdir: "{{ folder_for_application }}"
+      when: shell_command_output.rc == 0
+
+    - name: Creating the multiple directories
+      file:
+        path : "/data/{{ item }}"
+        state: directory
+        owner: root
+        group: root
+      with_items:
+       - "application2"
+       - "application3"
+       - "application4"
